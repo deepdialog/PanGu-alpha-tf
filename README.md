@@ -1,6 +1,10 @@
 # PanGu TensorFlow Version
 
-修改自：[https://git.openi.org.cn/PCL-Platform.Intelligence/PanGu-Alpha-GPU](https://git.openi.org.cn/PCL-Platform.Intelligence/PanGu-Alpha-GPU)
+[盘古项目Repo](https://git.openi.org.cn/PCL-Platform.Intelligence/PanGu-Alpha)
+
+[盘古GPU版本Repo](https://git.openi.org.cn/PCL-Platform.Intelligence/PanGu-Alpha-GPU)
+
+本Repo参考与修改自以上两个Repo中的内容，本Repo内容保持原Repo所写的Apache协议
 
 2.6B的 float16 版本，在A6000上大概占用9GB显存
 
@@ -9,6 +13,8 @@
 注意float16版本尽量不要在CPU上运行，特别慢
 
 float32版本，没有在显卡上测试过，建议2.6B在32GB内存的CPU上运行，13B在超过96GB内存的CPU上运行
+
+本项目的姊妹篇，[智源CPM-TF版本地址](https://github.com/qhduan/CPM-LM-TF2)，这两个模型是有一定区别的，具体可以参考上面PanGu官方Repo链接里面的论文
 
 ## Demo
 
