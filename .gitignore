@@ -1,6 +1,9 @@
 .ipynb_checkpoints
 *.py[cod]
 
+onnx_kv_q
+onnx_q
+
 pangu-2.6B-tf2
 pangu-13B-tf2
 Pangu-alpha_2.6B_mgt
