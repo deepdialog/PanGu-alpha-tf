@@ -14,6 +14,11 @@ async def api_generate(request: Request):
     curl -XPOST http://localhost:8000/api/generate \
         -H 'Content-Type: applicaton/json' \
         -d '{"text": "你好啊"}'
+    
+    curl -XPOST http://localhost:8000/api/generate \
+        -H 'Content-Type: applicaton/json' \
+        -d '{"text": "机器助理是一个非常聪明的，智能的机器人，它可以跟你聊天。\n用户：你是谁啊？\n机器助理：我是机器人，我来自deepdialog，你好。\n用户：你多大了？\n机器助理：", "additional_eod": ["\n"]}'
+    
     """
     data = await request.json()
     if 'text' not in data or not isinstance(data['text'], str):

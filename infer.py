@@ -76,11 +76,12 @@ def generate(
             next_tokens = next_tokens[:, :top_k]
 
         next_token = np.random.choice(next_tokens[0], p=next_probs_1[0])
-        if eod is not None:
-            if next_token in eod or next_token in additional_eod:
-                break
+        if eod is not None and next_token in eod:
+            break
+        if next_token in additional_eod or tokenizer.decode([int(next_token)]) in additional_eod:
+            break
         ids.append(next_token)
-    return tokenizer.decode([int(x) for x in ids]).replace(' ', '')
+    return tokenizer.decode([int(x) for x in ids])
 
 
 if __name__ == '__main__':

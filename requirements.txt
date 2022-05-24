@@ -7,3 +7,4 @@ uvicorn[standard]
 fastapi
 regex
 sentencepiece
+gunicorn
