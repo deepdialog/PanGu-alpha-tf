@@ -23,9 +23,9 @@ print('model loading...')
 tokenizer = JIEBATokenizer(
     'tokenizer/vocab.vocab',
     'tokenizer/vocab.model')
-pangu = create_model_for_provider('./onnx_q/pangu.onnx')
 pangu_kv = create_model_for_provider('./onnx_kv_q/pangu.onnx')
 jieba.initialize()
+kv_cache_start = np.load('kv_cache.npy')
 print('model green')
 
 
@@ -35,20 +35,20 @@ def generate(
     temperature = 1.0,
     top_p = 0.95,
     top_k = 50,
-    eod=tokenizer.eod_id,
-    ban = [
-        8,  # 一个空白字符
-    ]):
-
+    eod=None,
+    additional_eod=[],
+    ban = []
+):
+    if eod is None:
+        eod = [tokenizer.eod_id, tokenizer.eot_id]
     ids = tokenizer.encode(text)
-
     kv_cache = None
 
     for i in range(max_len):
-
         if i == 0:
-            logits, kv_cache = pangu.run(None, {
+            logits, kv_cache = pangu_kv.run(None, {
                 "input_ids": np.array([ids], dtype=np.int64),
+                'kv_cache': kv_cache_start,
             })
         else:
             logits, new_kv = pangu_kv.run(None, {
@@ -77,7 +77,7 @@ def generate(
 
         next_token = np.random.choice(next_tokens[0], p=next_probs_1[0])
         if eod is not None:
-            if eod == next_token:
+            if next_token in eod or next_token in additional_eod:
                 break
         ids.append(next_token)
     return tokenizer.decode([int(x) for x in ids]).replace(' ', '')

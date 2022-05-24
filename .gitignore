@@ -3,6 +3,7 @@
 
 onnx_kv_q
 onnx_q
+kv_cache.npy
 
 pangu-2.6B-tf2
 pangu-13B-tf2

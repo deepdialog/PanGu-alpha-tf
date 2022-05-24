@@ -59,7 +59,7 @@ def gelu(x):
     return 0.5 * x * (1.0 + tf.math.erf(x / tf.cast(tf.sqrt(2.0), tf.keras.backend.floatx())))
 
 
-def get_attention_mask(dim):
+def get_attention_mask(dim, dim2=None):
     """
     给一个斜对角矩阵，让decoder的每个元素只能看到自己前面的，例如
     dim = 3
@@ -76,9 +76,12 @@ def get_attention_mask(dim):
     return tf.cast(m, dtype)
 
     """
-    return tf.cast(
-        tf.linalg.band_part(tf.ones((dim, dim)), -1, 0),
+    if dim2 is None:
+        dim2 = dim
+    mask = tf.cast(
+        tf.linalg.band_part(tf.ones((dim2, dim2)), -1, 0),
         tf.keras.backend.floatx())
+    return mask[-dim:, :]
 
 
 def get_dense(units, name=None, stddev=0.02):
@@ -140,8 +143,12 @@ class Attention(tf.keras.layers.Layer):
         attn = tf.matmul(q, k, transpose_b=True)  # [B, N, L, S]
         attn = tf.multiply(attn, 1.0 / math.sqrt(float(self.size_per_head)))
 
-        # [L, S]
-        attention_mask = get_attention_mask(seq_len)
+        if cached_kv is not None:
+            # [L, S]
+            attention_mask = get_attention_mask(seq_len, tf.shape(k)[-2])
+        else:
+            # [L, S]
+            attention_mask = get_attention_mask(seq_len)
         # [1, 1, L, S]
         attention_mask = tf.expand_dims(tf.expand_dims(attention_mask, 0), 0)
 
@@ -277,7 +284,7 @@ class GPT(tf.keras.Model):
 
     def call(self, x, kv_cache=None, **kwargs):
         x = self.token_emb(x)
-        query = self.query_emb(x)
+        query = self.query_emb(x, kv_cache=kv_cache)
         x = self.emb_drop(x + self.pos_emb(x, kv_cache=kv_cache))
 
         cached_kvs = []
