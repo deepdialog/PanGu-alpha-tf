@@ -42,6 +42,7 @@ def generate(
     if eod is None:
         eod = [tokenizer.eod_id, tokenizer.eot_id]
     ids = tokenizer.encode(text)
+    predict_ids = []
     kv_cache = None
 
     for i in range(max_len):
@@ -80,8 +81,8 @@ def generate(
             break
         if next_token in additional_eod or tokenizer.decode([int(next_token)]) in additional_eod:
             break
-        ids.append(next_token)
-    return tokenizer.decode([int(x) for x in ids])
+        predict_ids.append(next_token)
+    return text + tokenizer.decode([int(x) for x in predict_ids])
 
 
 if __name__ == '__main__':
